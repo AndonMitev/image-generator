@@ -1,4 +1,4 @@
-interface GalleryItem {
+export interface GalleryItem {
   id: number;
   title: string;
   description: string;
@@ -610,4 +610,314 @@ export const galleryItems: GalleryItem[] = [
     author: 'Painter Pete',
     likes: 1770
   }
+];
+
+// Additional 30 images for virtualization testing
+export const additionalGalleryItems: GalleryItem[] = [
+  {
+    id: 61,
+    title: 'Mountain Summit',
+    description: 'Breathtaking view from the peak',
+    image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b',
+    size: 'large',
+    category: 'nature',
+    author: 'Peak Climber',
+    likes: 4231
+  },
+  {
+    id: 62,
+    title: 'Coastal Sunset',
+    description: 'Golden hour by the beach',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+    size: 'medium',
+    category: 'nature',
+    author: 'Beach Wanderer',
+    likes: 3567
+  },
+  {
+    id: 63,
+    title: 'Tech Workspace',
+    description: 'Modern productivity setup',
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
+    size: 'small',
+    category: 'technology',
+    author: 'Tech Nomad',
+    likes: 2134
+  },
+  {
+    id: 64,
+    title: 'City Skyline Night',
+    description: 'Urban landscape after dark',
+    image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b',
+    size: 'large',
+    category: 'city',
+    author: 'Night Owl',
+    likes: 3978
+  },
+  {
+    id: 65,
+    title: 'Desert Oasis',
+    description: 'Water in the midst of sand',
+    image: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0',
+    size: 'medium',
+    category: 'nature',
+    author: 'Desert Wanderer',
+    likes: 1876
+  },
+  {
+    id: 66,
+    title: 'Abstract Patterns',
+    description: 'Mesmerizing geometric shapes',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
+    size: 'small',
+    category: 'abstract',
+    author: 'Pattern Master',
+    likes: 2354
+  },
+  {
+    id: 67,
+    title: 'Vintage Car',
+    description: 'Classic automobile beauty',
+    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2',
+    size: 'large',
+    category: 'retro',
+    author: 'Classic Collector',
+    likes: 3241
+  },
+  {
+    id: 68,
+    title: 'Underwater World',
+    description: 'Exploring ocean depths',
+    image: 'https://images.unsplash.com/photo-1551244072-5d12893278ab',
+    size: 'medium',
+    category: 'nature',
+    author: 'Marine Explorer',
+    likes: 2876
+  },
+  {
+    id: 69,
+    title: 'Space Galaxy',
+    description: 'Distant stars and cosmic dust',
+    image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564',
+    size: 'large',
+    category: 'space',
+    author: 'Star Gazer',
+    likes: 4532
+  },
+  {
+    id: 70,
+    title: 'Forest Pathway',
+    description: 'Journey through ancient woods',
+    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b',
+    size: 'medium',
+    category: 'nature',
+    author: 'Woodland Guide',
+    likes: 1987
+  },
+  {
+    id: 71,
+    title: 'Minimalist Interior',
+    description: 'Clean lines and open space',
+    image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85',
+    size: 'small',
+    category: 'minimal',
+    author: 'Interior Designer',
+    likes: 2543
+  },
+  {
+    id: 72,
+    title: 'Tokyo Streets',
+    description: 'Bustling urban pathways',
+    image: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26',
+    size: 'large',
+    category: 'city',
+    author: 'Urban Explorer',
+    likes: 3654
+  },
+  {
+    id: 73,
+    title: 'Coffee Art',
+    description: 'Latte foam creativity',
+    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
+    size: 'medium',
+    category: 'food',
+    author: 'Barista Pro',
+    likes: 1765
+  },
+  {
+    id: 74,
+    title: 'Snow Peak',
+    description: 'Winter mountain landscape',
+    image: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e',
+    size: 'large',
+    category: 'nature',
+    author: 'Winter Climber',
+    likes: 2987
+  },
+  {
+    id: 75,
+    title: 'Retro Camera',
+    description: 'Vintage photography equipment',
+    image: 'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848',
+    size: 'small',
+    category: 'retro',
+    author: 'Film Photographer',
+    likes: 1432
+  },
+  {
+    id: 76,
+    title: 'Sunrise Mountains',
+    description: 'First light on the peaks',
+    image: 'https://images.unsplash.com/photo-1455156218388-5e61b526818b',
+    size: 'large',
+    category: 'nature',
+    author: 'Dawn Hiker',
+    likes: 3876
+  },
+  {
+    id: 77,
+    title: 'Geometric Building',
+    description: 'Modern architectural marvel',
+    image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625',
+    size: 'medium',
+    category: 'architecture',
+    author: 'Structure Critic',
+    likes: 2354
+  },
+  {
+    id: 78,
+    title: 'Rainy Window',
+    description: 'Droplets on glass cityscape',
+    image: 'https://images.unsplash.com/photo-1501999635878-71cb5379c2d8',
+    size: 'small',
+    category: 'city',
+    author: 'Rain Walker',
+    likes: 1876
+  },
+  {
+    id: 79,
+    title: 'Northern Lights',
+    description: 'Aurora borealis display',
+    image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7',
+    size: 'large',
+    category: 'nature',
+    author: 'Arctic Explorer',
+    likes: 4298
+  },
+  {
+    id: 80,
+    title: 'Futuristic Tech',
+    description: "Tomorrow's innovations",
+    image: 'https://images.unsplash.com/photo-1478358161113-b0e11994a36b',
+    size: 'medium',
+    category: 'technology',
+    author: 'Future Thinker',
+    likes: 2765
+  },
+  {
+    id: 81,
+    title: 'Autumn Path',
+    description: 'Fall colors in the forest',
+    image: 'https://images.unsplash.com/photo-1476820865390-c52aeebb9891',
+    size: 'large',
+    category: 'nature',
+    author: 'Seasonal Walker',
+    likes: 3421
+  },
+  {
+    id: 82,
+    title: 'Vinyl Collection',
+    description: 'Classic record albums',
+    image: 'https://images.unsplash.com/photo-1483412033650-1015ddeb83d1',
+    size: 'small',
+    category: 'retro',
+    author: 'Music Collector',
+    likes: 1987
+  },
+  {
+    id: 83,
+    title: 'Coastal Cliffs',
+    description: 'Dramatic ocean meeting land',
+    image: 'https://images.unsplash.com/photo-1473773508845-188df298d2d1',
+    size: 'medium',
+    category: 'nature',
+    author: 'Coastal Hiker',
+    likes: 2876
+  },
+  {
+    id: 84,
+    title: 'Neon District',
+    description: 'Vibrant night in the city',
+    image: 'https://images.unsplash.com/photo-1514214246283-d427a95c5d2f',
+    size: 'large',
+    category: 'city',
+    author: 'Night Crawler',
+    likes: 3654
+  },
+  {
+    id: 85,
+    title: 'Abstract Colors',
+    description: 'Spectrum of fluid paint',
+    image: 'https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb',
+    size: 'small',
+    category: 'abstract',
+    author: 'Color Artist',
+    likes: 1543
+  },
+  {
+    id: 86,
+    title: 'Desert Road',
+    description: 'Highway through arid landscape',
+    image: 'https://images.unsplash.com/photo-1506354666786-959d6d497f1a',
+    size: 'medium',
+    category: 'travel',
+    author: 'Road Tripper',
+    likes: 2198
+  },
+  {
+    id: 87,
+    title: 'Starry Night',
+    description: 'Milky way over mountains',
+    image: 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45',
+    size: 'large',
+    category: 'space',
+    author: 'Night Photographer',
+    likes: 4321
+  },
+  {
+    id: 88,
+    title: 'Ancient Ruins',
+    description: 'Historic structures standing tall',
+    image: 'https://images.unsplash.com/photo-1526582720660-76b25c65613d',
+    size: 'medium',
+    category: 'travel',
+    author: 'History Buff',
+    likes: 2654
+  },
+  {
+    id: 89,
+    title: 'Misty Lake',
+    description: 'Foggy morning by the water',
+    image: 'https://images.unsplash.com/photo-1477322524744-0eece9e79640',
+    size: 'large',
+    category: 'nature',
+    author: 'Lake Explorer',
+    likes: 3187
+  },
+  {
+    id: 90,
+    title: 'Retro Diner',
+    description: 'Classic Americana eatery',
+    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b',
+    size: 'small',
+    category: 'retro',
+    author: 'Vintage Foodie',
+    likes: 1876
+  }
+];
+
+// Combine original and additional items for testing virtualization
+export const extendedGalleryItems: GalleryItem[] = [
+  ...galleryItems,
+  ...additionalGalleryItems
 ];
