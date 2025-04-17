@@ -7,11 +7,5 @@ export enum AuthProvider {
 
 export enum Routes {
   HOME = '/',
-  LOGIN = '/login',
-  REGISTER = '/register',
-  PROFILE = '/profile',
-  GENERATE = '/generate'
+  PROFILE = '/profile'
 }
-
-// Protected routes that require authentication
-export const PROTECTED_ROUTES = [Routes.GENERATE, Routes.PROFILE];
