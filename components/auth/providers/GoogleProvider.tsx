@@ -86,7 +86,7 @@ export function GoogleProvider({ onBack }: AuthProviderProps) {
         </div>
         <h3 className='text-lg font-medium mb-2'>Gmail Authentication</h3>
         <p className='text-sm text-muted-foreground mb-4'>
-          Gmail authentication is coming soon. We're working on integrating
+          Gmail authentication is coming soon. We&apos;re working on integrating
           Gmail Sign-In into our platform.
         </p>
         <Button className='w-full' disabled={true} onClick={handleGoogleSignIn}>

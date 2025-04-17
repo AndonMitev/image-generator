@@ -87,7 +87,7 @@ export function MagicLinkProvider({ onBack, onSuccess }: AuthProviderProps) {
       <div className='space-y-4 text-center'>
         <h2 className='text-xl font-semibold'>Check your email</h2>
         <p className='text-muted-foreground'>
-          We've sent a magic link to {email}. Click the link to sign in.
+          We&apos;ve sent a magic link to {email}. Click the link to sign in.
         </p>
         <Button
           variant='outline'

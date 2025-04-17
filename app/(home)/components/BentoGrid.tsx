@@ -150,7 +150,7 @@ export function BentoGrid() {
   const [visibleItems, setVisibleItems] = useState<any[]>([]);
   const scrollPositionRef = useRef(0);
 
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useImageGallery();
 
   const { ref: bottomRef, inView } = useInView({

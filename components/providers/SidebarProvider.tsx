@@ -11,8 +11,7 @@ import {
   Moon,
   Sun,
   LogIn,
-  LogOut,
-  User
+  LogOut
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useAuth } from './AuthProvider';
