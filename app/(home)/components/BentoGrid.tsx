@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Heart, Loader2 } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
@@ -54,8 +54,8 @@ const calculateLayout = (
   const cellSize = Math.min(maxCellSize, containerWidth / maxColumns);
 
   // Clone existing grid and positions
-  let grid = existingGrid.length ? existingGrid.map((row) => [...row]) : [];
-  let positions = { ...existingPositions };
+  const grid = existingGrid.length ? existingGrid.map((row) => [...row]) : [];
+  const positions = { ...existingPositions };
 
   // Initialize column heights from existing items
   const columnHeights = Array(maxColumns).fill(0);
