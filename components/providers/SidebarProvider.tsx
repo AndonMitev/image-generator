@@ -3,8 +3,20 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Menu, X, Home, Image, Moon, Sun } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Home,
+  Image as ImageIcon,
+  Moon,
+  Sun,
+  LogIn,
+  LogOut
+} from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useAuth } from './AuthProvider';
+import { AuthenticationDialog } from '@/components/auth/AuthenticationDialog';
+import { toast } from 'sonner';
 
 const sidebarVariants = {
   open: {
@@ -30,6 +42,10 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(true);
   // Add loading state to prevent UI flicker
   const [isLoading, setIsLoading] = useState(true);
+  // Auth dialog state
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+
+  const { user, signOut } = useAuth();
 
   // Load the saved state from localStorage on the client side only
   useEffect(() => {
@@ -46,6 +62,20 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('sidebarOpen', JSON.stringify(newState));
       return newState;
     });
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut();
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success('Signed out successfully');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out');
+    }
   };
 
   return (
@@ -77,6 +107,23 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
                 >
                   <ThemeButton isOpen={isOpen} />
                   <NavigationMenu isOpen={isOpen} />
+
+                  {/* Auth Button */}
+                  {user ? (
+                    <AuthButton
+                      isOpen={isOpen}
+                      icon={LogOut}
+                      label='Sign Out'
+                      onClick={handleSignOut}
+                    />
+                  ) : (
+                    <AuthButton
+                      isOpen={isOpen}
+                      icon={LogIn}
+                      label='Sign In'
+                      onClick={() => setIsAuthDialogOpen(true)}
+                    />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -91,6 +138,11 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
           >
             {children}
           </main>
+
+          <AuthenticationDialog
+            isOpen={isAuthDialogOpen}
+            onClose={() => setIsAuthDialogOpen(false)}
+          />
         </div>
       )}
       {isLoading && (
@@ -120,7 +172,7 @@ export const useSidebar = () => {
 
 const menuItems = [
   { icon: Home, label: 'Home', href: '/' },
-  { icon: Image, label: 'Generate', href: '/generate', isPro: true }
+  { icon: ImageIcon, label: 'Generate', href: '/generate', isPro: true }
 ];
 
 // Logo Component
@@ -137,7 +189,7 @@ const Logo = ({ isOpen }: { isOpen: boolean }) => (
         <div className='relative h-10 w-10 rounded-xl bg-gradient-to-br from-primary/30 to-accent/30 p-[1px] group cursor-pointer overflow-hidden'>
           <div className='absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 opacity-50 group-hover:opacity-100 transition-opacity duration-500' />
           <div className='relative h-full w-full rounded-xl bg-background/95 flex items-center justify-center backdrop-blur-xl'>
-            <Image className='h-5 w-5 text-primary' />
+            <ImageIcon className='h-5 w-5 text-primary' />
           </div>
         </div>
         <div className='flex flex-col'>
@@ -345,3 +397,49 @@ const StorageUsed = ({ isOpen }: { isOpen: boolean }) => (
     </motion.div>
   </AnimatePresence>
 );
+
+// Auth Button Component
+const AuthButton = ({
+  isOpen,
+  icon: Icon,
+  label,
+  onClick
+}: {
+  isOpen: boolean;
+  icon: React.ComponentType<any>;
+  label: string;
+  onClick: () => void;
+}) => {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className='w-full mt-4 relative group cursor-pointer'
+    >
+      <div className='absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-30 transition-all duration-500 blur-xl' />
+      <div className='relative h-12 rounded-xl bg-gradient-to-br from-primary/30 to-accent/30 p-[1px] overflow-hidden'>
+        <div className='h-full w-full rounded-xl bg-background/95 flex items-center gap-3 px-4 backdrop-blur-xl group-hover:bg-background/80 transition-colors duration-300'>
+          <div className='flex items-center gap-3 relative z-10 w-full justify-between'>
+            <div className='flex items-center gap-3'>
+              <Icon className='h-4 w-4 text-primary' />
+              <AnimatePresence mode='wait'>
+                {isOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                  >
+                    <span className='text-sm font-medium whitespace-nowrap text-foreground'>
+                      {label}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.button>
+  );
+};
