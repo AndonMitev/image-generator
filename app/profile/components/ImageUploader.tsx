@@ -199,7 +199,7 @@ export const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
             <div className='text-xs text-gray-400 max-w-xs'>
               <p>Supported formats: JPEG, PNG, GIF</p>
               <p>Maximum total size: 15MB</p>
-              <p>You'll need at least 4 images to train the model</p>
+              <p>You&apos;ll need at least 4 images to train the model</p>
               {isUploading && (
                 <p className='text-blue-400 mt-2'>
                   Processing ${files.length} files...
