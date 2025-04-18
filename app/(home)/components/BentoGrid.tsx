@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Heart, Loader2 } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
-import { useImageGallery } from '@/hooks/use-infinity-query';
+import { useImageGallery } from '@/lib/hooks/use-infinity-query';
 import React from 'react';
 
 type GalleryItem = {
