@@ -31,7 +31,7 @@ export function AuthenticationDialog({
         </DialogHeader>
 
         <div className='space-y-3 py-4'>
-          <MagicLinkProvider onBack={onClose} />
+          <MagicLinkProvider />
           <GoogleProvider onBack={onClose} />
           <TwitterProvider onBack={onClose} />
         </div>

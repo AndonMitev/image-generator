@@ -25,11 +25,10 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export interface AuthProviderProps {
-  onBack?: () => void;
   onSuccess?: (email: string) => void;
 }
 
-export function MagicLinkProvider({ onBack, onSuccess }: AuthProviderProps) {
+export function MagicLinkProvider({ onSuccess }: AuthProviderProps) {
   const { signInWithMagicLink } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState<'button' | 'form' | 'success'>('button');
