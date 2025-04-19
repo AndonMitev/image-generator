@@ -8,9 +8,17 @@ import { toast } from 'sonner';
 import { useProfileQuery } from '@/lib/hooks/queries/use-profile-query';
 import { useUploadFileMutation } from '@/lib/hooks/mutations/use-upload-file-mutation';
 
+interface ImagePreview {
+  id: string;
+  url: string;
+  file: File;
+}
+
 interface TrainingImageUploaderProps {
   onUpload?: (publicUrl: string) => void;
-  onFilesSelected?: (files: File[]) => void;
+  onFilesSelected?: (previews: ImagePreview[]) => void;
+  maxFiles?: number;
+  minFiles?: number;
 }
 
 interface TrainingImageUploaderRef {
@@ -20,11 +28,11 @@ interface TrainingImageUploaderRef {
 export const TrainingImageUploader = forwardRef<
   TrainingImageUploaderRef,
   TrainingImageUploaderProps
->(({ onFilesSelected }, ref) => {
+>(({ onFilesSelected, maxFiles = 10, minFiles = 4 }, ref) => {
   const [dragActive, setDragActive] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>('');
   const [isCreatingModel, setIsCreatingModel] = useState(false);
+  const [existingPreviews, setExistingPreviews] = useState<ImagePreview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: profile, isLoading: isLoadingProfile } = useProfileQuery();
@@ -35,7 +43,9 @@ export const TrainingImageUploader = forwardRef<
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      setFiles([]);
+      // Clean up preview URLs
+      existingPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+      setExistingPreviews([]);
     }
   }));
 
@@ -60,14 +70,55 @@ export const TrainingImageUploader = forwardRef<
       return false;
     }
 
+    // For new uploads, just check if we're not exceeding max files
+    const totalFiles = existingPreviews.length + newFiles.length;
+    if (totalFiles > maxFiles) {
+      setError(`Maximum ${maxFiles} images allowed`);
+      return false;
+    }
+
+    // Show informational message about minimum required images
+    if (totalFiles < minFiles) {
+      setError(`You'll need at least ${minFiles} images to train the model`);
+      // Still return true to allow the upload
+      return true;
+    }
+
     return true;
   };
 
   const generatePreviews = (selectedFiles: File[]) => {
-    if (validateFiles(selectedFiles)) {
-      setFiles(selectedFiles);
-      onFilesSelected?.(selectedFiles);
+    if (!validateFiles(selectedFiles)) return;
+
+    // Filter out duplicates based on file names
+    const newUniqueFiles = selectedFiles.filter(
+      (newFile) =>
+        !existingPreviews.some(
+          (existing) => existing.file.name === newFile.name
+        )
+    );
+
+    // If all files were duplicates, show a message
+    if (newUniqueFiles.length === 0) {
+      toast.warning('These images have already been added');
+      return;
     }
+
+    // If some files were duplicates, show a message
+    if (newUniqueFiles.length < selectedFiles.length) {
+      toast.warning('Some duplicate images were skipped');
+    }
+
+    // Create previews for new unique files
+    const newPreviews = newUniqueFiles.map((file) => ({
+      id: Math.random().toString(36).substring(2, 9),
+      url: URL.createObjectURL(file),
+      file
+    }));
+
+    const updatedPreviews = [...existingPreviews, ...newPreviews];
+    setExistingPreviews(updatedPreviews);
+    onFilesSelected?.(updatedPreviews);
   };
 
   const handleCreateModel = async () => {
@@ -103,7 +154,7 @@ export const TrainingImageUploader = forwardRef<
     <DragAndDropView
       dragActive={dragActive}
       error={error}
-      files={files}
+      files={existingPreviews.map((preview) => preview.file)}
       isUploading={isUploading}
       fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
       onDragEnter={(e) => {
