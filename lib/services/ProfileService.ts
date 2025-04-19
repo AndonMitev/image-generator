@@ -26,6 +26,7 @@ class ProfileService {
       .eq('id', user.id);
 
     if (error) {
+      console.error('[ProfileService] Error updating profile:', error);
       throw new Error(error.message);
     }
 
@@ -48,7 +49,10 @@ class ProfileService {
       .single();
 
     if (error) {
-      throw new Error(error.message);
+      console.error('[ProfileService] Error getting profile:', error);
+      throw new Error(
+        `[ProfileService] Error getting profile: ${error.message}`
+      );
     }
 
     return {

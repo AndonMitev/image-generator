@@ -4,10 +4,10 @@ import { useState, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Loader2, X } from 'lucide-react';
-import { ImageUploader } from './ImageUploader';
+import { TrainingImageUploader } from './TrainingImageUploader';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useUploadFileMutation } from '@/lib/hooks/queries/use-upload-file-mutation';
+import { useUploadFileMutation } from '@/lib/hooks/mutations/use-upload-file-mutation';
 import JSZip from 'jszip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ import { trainModel } from '@/lib/actions/replicate';
 interface ImagePreview {
   id: string;
   url: string;
+  file: File;
 }
 
 const MIN_TRAINING_IMAGES = 4;
@@ -34,7 +35,7 @@ const isValidTriggerWord = (word: string) => {
   );
 };
 
-export function TrainingImagesPreview() {
+export const TrainingImageManager = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<ImagePreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -49,63 +50,23 @@ export function TrainingImagesPreview() {
 
   // Calculate validation states
   const validationState = useMemo(() => {
-    const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
-    const isTriggerWordValid = isValidTriggerWord(triggerWord);
-
+    const hasMinimumImages = selectedFiles.length >= MIN_TRAINING_IMAGES;
     return {
-      isValidCount:
-        selectedFiles.length >= MIN_TRAINING_IMAGES &&
-        selectedFiles.length <= MAX_TRAINING_IMAGES,
-      isValidSize: totalSize <= MAX_TRAINING_IMAGE_SIZE,
-      isTriggerWordValid,
-      errorMessage: !selectedFiles.length
-        ? 'No files selected'
-        : selectedFiles.length < MIN_TRAINING_IMAGES
-        ? `Add at least ${MIN_TRAINING_IMAGES} images`
-        : selectedFiles.length > MAX_TRAINING_IMAGES
-        ? `Maximum ${MAX_TRAINING_IMAGES} images allowed`
-        : totalSize > MAX_TRAINING_IMAGE_SIZE
-        ? `Total size exceeds ${MAX_TRAINING_IMAGE_SIZE / 1024 / 1024}MB`
-        : !triggerWord.trim()
+      isTriggerWordValid: isValidTriggerWord(triggerWord),
+      hasMinimumImages,
+      errorMessage: !triggerWord.trim()
         ? 'Trigger word is required'
-        : !isTriggerWordValid
+        : !isValidTriggerWord(triggerWord)
         ? `Trigger word must be at least ${MIN_TRIGGER_WORD_LENGTH} letters long and contain only letters`
+        : !hasMinimumImages
+        ? `Need at least ${MIN_TRAINING_IMAGES} images to train`
         : null
     };
-  }, [selectedFiles, triggerWord]);
+  }, [triggerWord, selectedFiles.length]);
 
-  const handleFilesSelected = (files: File[]) => {
-    // Filter out duplicates based on file names
-    const newUniqueFiles = files.filter(
-      (newFile) =>
-        !selectedFiles.some(
-          (existingFile) => existingFile.name === newFile.name
-        )
-    );
-
-    // If all files were duplicates, show a message
-    if (newUniqueFiles.length === 0) {
-      toast.warning('These images have already been added');
-      return;
-    }
-
-    // If some files were duplicates, show a message
-    if (newUniqueFiles.length < files.length) {
-      toast.warning('Some duplicate images were skipped');
-    }
-
-    // Combine existing files with new unique files
-    const newFiles = [...selectedFiles, ...newUniqueFiles];
-    setSelectedFiles(newFiles);
-
-    // Create previews for new unique files only
-    const newPreviews = newUniqueFiles.map((file) => ({
-      id: Math.random().toString(36).substring(2, 9),
-      url: URL.createObjectURL(file)
-    }));
-
-    // Add new previews to existing ones
-    setPreviews((current) => [...current, ...newPreviews]);
+  const handleFilesSelected = (newPreviews: ImagePreview[]) => {
+    setPreviews(newPreviews);
+    setSelectedFiles(newPreviews.map((preview) => preview.file));
   };
 
   const handleConfirmUpload = async () => {
@@ -137,6 +98,8 @@ export function TrainingImagesPreview() {
         path: fileName
       });
 
+      console.log('[TrainingImageManager] result:', result);
+      return;
       if (result?.publicUrl) {
         // Run update profile and train model in parallel
         const [_, trainingResult] = await Promise.all([
@@ -164,6 +127,28 @@ export function TrainingImagesPreview() {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleRemovePreview = (previewId: string) => {
+    const updatedPreviews = previews.filter((p) => p.id !== previewId);
+    setPreviews(updatedPreviews);
+    setSelectedFiles(updatedPreviews.map((preview) => preview.file));
+
+    // Reset the file input to allow re-uploading the same files
+    uploaderRef.current?.resetFiles();
+
+    // If we removed the last image, clean up everything
+    if (updatedPreviews.length === 0) {
+      handleClearAll();
+    }
+  };
+
+  const handleClearAll = () => {
+    setPreviews([]);
+    setSelectedFiles([]);
+    setTriggerWord('');
+    // Reset the file input using the ref
+    uploaderRef.current?.resetFiles();
   };
 
   // Render different button states based on training status
@@ -198,8 +183,7 @@ export function TrainingImagesPreview() {
             variant='destructive'
             onClick={handleConfirmUpload}
             disabled={
-              !validationState.isValidCount ||
-              !validationState.isValidSize ||
+              !validationState.hasMinimumImages ||
               !validationState.isTriggerWordValid
             }
           >
@@ -212,78 +196,23 @@ export function TrainingImagesPreview() {
             onClick={handleConfirmUpload}
             disabled={
               isUploading ||
-              !validationState.isValidCount ||
-              !validationState.isValidSize ||
+              !validationState.hasMinimumImages ||
               !validationState.isTriggerWordValid
             }
             className='bg-blue-600 hover:bg-blue-700 text-white'
           >
-            Confirm Upload
+            {validationState.hasMinimumImages
+              ? 'Start Training'
+              : `Add ${MIN_TRAINING_IMAGES - selectedFiles.length} More Images`}
           </Button>
         );
     }
   };
 
-  const handleRemovePreview = (previewId: string) => {
-    // Find the preview to remove
-    const previewToRemove = previews.find((p) => p.id === previewId);
-    if (previewToRemove) {
-      // Revoke the URL for the removed preview
-      URL.revokeObjectURL(previewToRemove.url);
-    }
-
-    // Update previews
-    setPreviews((current) => current.filter((p) => p.id !== previewId));
-
-    // Update selected files
-    const newFiles = selectedFiles.filter((_, index) => {
-      const preview = previews[index];
-      return preview && preview.id !== previewId;
-    });
-    setSelectedFiles(newFiles);
-
-    // Reset the file input to allow re-uploading the same files
-    uploaderRef.current?.resetFiles();
-
-    // If we removed the last image, clean up everything
-    if (newFiles.length === 0) {
-      handleClearAll();
-    }
-  };
-
-  const handleClearAll = () => {
-    // Clean up preview URLs
-    previews.forEach((preview) => URL.revokeObjectURL(preview.url));
-    setPreviews([]);
-    setSelectedFiles([]);
-    setTriggerWord('');
-    // Reset the file input using the ref
-    uploaderRef.current?.resetFiles();
-  };
-
-  const handleCancel = () => {
-    // Clean up preview URLs
-    previews.forEach((preview) => URL.revokeObjectURL(preview.url));
-    router.back();
-  };
-
   return (
     <div className='relative'>
-      <div className='bg-gray-900 py-5 px-4 flex justify-between items-center'>
-        <h2 className='text-xl font-bold text-white'>Training Images</h2>
-        <Button
-          variant='ghost'
-          className='text-white hover:bg-gray-800 rounded-full'
-          size='sm'
-          onClick={handleCancel}
-        >
-          <X className='h-5 w-5' />
-          <span className='ml-2'>Cancel</span>
-        </Button>
-      </div>
-
       <div className='p-4 space-y-6'>
-        <ImageUploader
+        <TrainingImageUploader
           ref={uploaderRef}
           onFilesSelected={handleFilesSelected}
         />
@@ -337,10 +266,9 @@ export function TrainingImagesPreview() {
       </div>
     </div>
   );
-}
+};
 
 // Sub-components
-
 interface RemovePreviewButtonProps {
   onRemove: () => void;
 }
