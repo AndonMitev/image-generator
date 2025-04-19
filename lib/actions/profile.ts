@@ -1,7 +1,7 @@
 'use server';
 
-import { profileService } from '../services/ProfileService';
-import { Profile } from '../types/profile';
+import { profileService } from '@/lib/services/ProfileService';
+import { Profile } from '@/lib/types/profile';
 
 export async function getProfile() {
   return profileService.getProfile();

@@ -20,10 +20,12 @@ class AuthService {
     } = await supabase.auth.getUser();
 
     if (error) {
+      console.error('[AuthService] Error checking authentication:', error);
       throw new AuthError('[AuthService] Authentication failed');
     }
 
     if (!user) {
+      console.error('[AuthService] User is not authenticated');
       throw new AuthError('[AuthService] User is not authenticated');
     }
 

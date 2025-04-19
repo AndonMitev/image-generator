@@ -11,13 +11,13 @@ export async function trainModel(data: {
   triggerWord: string;
   destination: string;
 }) {
-  return replicateService.trainModel(
-    data.zipUrl,
-    data.triggerWord,
-    data.destination
-  );
+  return replicateService.trainModel({
+    zipUrl: data.zipUrl,
+    triggerWord: data.triggerWord,
+    destination: data.destination
+  });
 }
 
-export async function generateImage(prompt: string, modelUrl: string) {
-  return replicateService.generateImage(prompt, modelUrl);
+export async function generateImage({ prompt }: { prompt: string }) {
+  return replicateService.generateImage({ prompt });
 }

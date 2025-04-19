@@ -1,9 +1,9 @@
-import { TrainingImagesPreview } from './components/TrainingImagesPreview';
+import { ProfileTabs } from './components/ProfileTabs';
 
 export default async function ProfilePage() {
   return (
-    <div className='min-h-screen bg-black'>
-      <TrainingImagesPreview />
+    <div className='min-h-screen bg-black p-8'>
+      <ProfileTabs />
     </div>
   );
 }

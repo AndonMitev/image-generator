@@ -4,10 +4,10 @@ import { useState, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Loader2, X } from 'lucide-react';
-import { ImageUploader } from './ImageUploader';
+import { TrainingImageUploader } from './TrainingImageUploader';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useUploadFileMutation } from '@/lib/hooks/queries/use-upload-file-mutation';
+import { useUploadFileMutation } from '@/lib/hooks/mutations/use-upload-file-mutation';
 import JSZip from 'jszip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +34,7 @@ const isValidTriggerWord = (word: string) => {
   );
 };
 
-export function TrainingImagesPreview() {
+export const TrainingImageManager = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<ImagePreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -283,7 +283,7 @@ export function TrainingImagesPreview() {
       </div>
 
       <div className='p-4 space-y-6'>
-        <ImageUploader
+        <TrainingImageUploader
           ref={uploaderRef}
           onFilesSelected={handleFilesSelected}
         />
@@ -337,10 +337,9 @@ export function TrainingImagesPreview() {
       </div>
     </div>
   );
-}
+};
 
 // Sub-components
-
 interface RemovePreviewButtonProps {
   onRemove: () => void;
 }

@@ -15,33 +15,34 @@ class ReplicateService {
     return ReplicateService.instance;
   }
 
-  async trainModel(
-    input_images: string,
-    trigger_word: string,
-    destination: string
-  ) {
+  async trainModel({
+    zipUrl,
+    triggerWord,
+    destination
+  }: {
+    zipUrl: string;
+    triggerWord: string;
+    destination: string;
+  }) {
     await authService.checkAuth();
 
     const supabase = await supabaseServerClient();
 
     const { data, error } = await supabase.functions.invoke('train-model', {
       body: JSON.stringify({
-        input_images,
-        trigger_word,
+        input_images: zipUrl,
+        trigger_word: triggerWord,
         destination
       })
     });
 
-    console.log('data', data);
-    console.log('error', error);
-
     if (error) {
       console.error(
-        '[AIModelService] Error invoking train-model function:',
+        '[ReplicateService] Error invoking train-model function:',
         error
       );
       throw new Error(
-        `[AIModelService] Failed to train model: ${error.message}`
+        `[ReplicateService] Failed to train model: ${error.message}`
       );
     }
 
@@ -62,11 +63,11 @@ class ReplicateService {
 
     if (error) {
       console.error(
-        '[AIModelService] Error invoking create-model function:',
+        '[ReplicateService] Error invoking create-model function:',
         error
       );
       throw new Error(
-        `[AIModelService] Failed to create model: ${error.message}`
+        `[ReplicateService] Failed to create model: ${error.message}`
       );
     }
 
@@ -80,29 +81,31 @@ class ReplicateService {
     return data;
   }
 
-  async generateImage(prompt: string, modelUrl: string) {
+  async generateImage({ prompt }: { prompt: string }) {
     await authService.checkAuth();
 
     const supabase = await supabaseServerClient();
 
+    const user = await profileService.getProfile();
+
     const { data, error } = await supabase.functions.invoke('send-prompt', {
       body: JSON.stringify({
         prompt,
-        modelUrl
+        modelUrl: user.model_url
       })
     });
 
     if (error) {
       console.error(
-        '[AIModelService] Error invoking send-prompt function:',
+        '[ReplicateService] Error invoking send-prompt function:',
         error
       );
       throw new Error(
-        `[AIModelService] Failed to generate image: ${error.message}`
+        `[ReplicateService] Failed to generate image: ${error.message}`
       );
     }
 
-    return data;
+    return data?.output?.[0];
   }
 }
 
