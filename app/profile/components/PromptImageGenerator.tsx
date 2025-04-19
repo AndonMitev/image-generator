@@ -29,7 +29,7 @@ export const PromptImageGenerator = () => {
         />
         <Button
           type='submit'
-          disabled={generateImage.isPending}
+          disabled={generateImage.isPending || !prompt.trim()}
           className='bg-blue-600 hover:bg-blue-700 text-white'
         >
           {generateImage.isPending ? (
